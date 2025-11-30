@@ -1,13 +1,22 @@
 const asyncHandler = require('express-async-handler')
 const Workout = require('../models/workoutModel')
 
-// Obtener todas las rutinas del usuario logueado
+
+// GET /api/workouts
+// En Postman: obtener todas las rutinas del usuario.
+// Sin body. Solo token.
+// Devuelve todas las rutinas guardadas por este usuario.
 const getWorkouts = asyncHandler(async (req, res) => {
     const workouts = await Workout.find({ user: req.user.id })
     res.status(200).json(workouts)
 })
 
-// Crear una rutina
+
+// POST /api/workouts
+// En Postman: crear una rutina simple.
+// Body obligatorio:
+// { "reps": 10, "peso": 50 }
+// Requiere token.
 const createWorkout = asyncHandler(async (req, res) => {
     const { reps, peso } = req.body
 
@@ -25,7 +34,12 @@ const createWorkout = asyncHandler(async (req, res) => {
     res.status(201).json(workout)
 })
 
-// Actualizar rutina
+
+// PUT /api/workouts/:id
+// En Postman: actualizar una rutina por ID.
+// Body: cualquier campo que quieras modificar, por ejemplo:
+// { "reps": 12 }
+// Requiere token.
 const updateWorkout = asyncHandler(async (req, res) => {
     const workout = await Workout.findById(req.params.id)
 
@@ -34,18 +48,26 @@ const updateWorkout = asyncHandler(async (req, res) => {
         throw new Error('Rutina no encontrada')
     }
 
-    // Validar usuario dueño
+    // Solo el dueño puede editarla
     if (workout.user.toString() !== req.user.id) {
         res.status(401)
         throw new Error('No autorizado')
     }
 
-    const updated = await Workout.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    const updated = await Workout.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+    )
 
     res.status(200).json(updated)
 })
 
-// Eliminar rutina
+
+// DELETE /api/workouts/:id
+// En Postman: eliminar una rutina por ID.
+// Sin body, requiere token.
+// Devuelve { id: "..." }
 const deleteWorkout = asyncHandler(async (req, res) => {
     const workout = await Workout.findById(req.params.id)
 

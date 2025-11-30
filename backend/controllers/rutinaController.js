@@ -2,12 +2,16 @@ const asyncHandler = require('express-async-handler')
 const Rutina = require('../models/rutinaModel')
 
 
+// GET /api/rutinas
+// En Postman: trae todas tus rutinas (token obligatorio, sin body)
 const getRutinas = asyncHandler(async (req, res) => {
     const rutinas = await Rutina.find({ user_id: req.user.id }).sort({ date: -1 })
     res.status(200).json(rutinas)
 })
 
 
+// GET /api/rutinas/:id
+// En Postman: trae una rutina por ID (token obligatorio, sin body)
 const getRutinaById = asyncHandler(async (req, res) => {
     const rutina = await Rutina.findById(req.params.id)
 
@@ -16,7 +20,6 @@ const getRutinaById = asyncHandler(async (req, res) => {
         throw new Error('Rutina no encontrada')
     }
 
-    // Verificar que la rutina pertenece al usuario logueado
     if (rutina.user_id.toString() !== req.user.id) {
         res.status(401)
         throw new Error('Usuario no autorizado')
@@ -26,6 +29,8 @@ const getRutinaById = asyncHandler(async (req, res) => {
 })
 
 
+// POST /api/rutinas
+// En Postman: crea una rutina.
 const createRutina = asyncHandler(async (req, res) => {
     const { name, date, exercises } = req.body
 
@@ -45,6 +50,9 @@ const createRutina = asyncHandler(async (req, res) => {
 })
 
 
+// PUT /api/rutinas/:id
+// En Postman: actualiza una rutina por su ID.
+
 const updateRutina = asyncHandler(async (req, res) => {
     const rutina = await Rutina.findById(req.params.id)
 
@@ -53,7 +61,6 @@ const updateRutina = asyncHandler(async (req, res) => {
         throw new Error('Rutina no encontrada')
     }
 
-    // Verificar que la rutina pertenece al usuario logueado
     if (rutina.user_id.toString() !== req.user.id) {
         res.status(401)
         throw new Error('Usuario no autorizado')
@@ -69,6 +76,8 @@ const updateRutina = asyncHandler(async (req, res) => {
 })
 
 
+// DELETE /api/rutinas/:id
+// En Postman: elimina una rutina por ID (solo token, sin body)
 const deleteRutina = asyncHandler(async (req, res) => {
     const rutina = await Rutina.findById(req.params.id)
 
@@ -77,7 +86,6 @@ const deleteRutina = asyncHandler(async (req, res) => {
         throw new Error('Rutina no encontrada')
     }
 
-    // Verificar que la rutina pertenece al usuario logueado
     if (rutina.user_id.toString() !== req.user.id) {
         res.status(401)
         throw new Error('Usuario no autorizado')
@@ -88,6 +96,10 @@ const deleteRutina = asyncHandler(async (req, res) => {
 })
 
 
+// POST /api/rutinas/:id/exercises
+// En Postman: agrega un ejercicio a la rutina.
+// Body mínimo:
+// { "exercise_name": "Bench press" }
 const addEjercicio = asyncHandler(async (req, res) => {
     const rutina = await Rutina.findById(req.params.id)
 
@@ -96,7 +108,6 @@ const addEjercicio = asyncHandler(async (req, res) => {
         throw new Error('Rutina no encontrada')
     }
 
-    // Verificar que la rutina pertenece al usuario logueado
     if (rutina.user_id.toString() !== req.user.id) {
         res.status(401)
         throw new Error('Usuario no autorizado')
@@ -120,6 +131,9 @@ const addEjercicio = asyncHandler(async (req, res) => {
 })
 
 
+// PUT /api/rutinas/:id/exercises/:exerciseIndex
+// En Postman: modifica un ejercicio por índice.
+// Body: campos a cambiar (e.g. type, sets, exercise_name)
 const updateEjercicio = asyncHandler(async (req, res) => {
     const rutina = await Rutina.findById(req.params.id)
 
@@ -128,7 +142,6 @@ const updateEjercicio = asyncHandler(async (req, res) => {
         throw new Error('Rutina no encontrada')
     }
 
-    // Verificar que la rutina pertenece al usuario logueado
     if (rutina.user_id.toString() !== req.user.id) {
         res.status(401)
         throw new Error('Usuario no autorizado')
@@ -141,7 +154,6 @@ const updateEjercicio = asyncHandler(async (req, res) => {
         throw new Error('Índice de ejercicio inválido')
     }
 
-    // Actualizar el ejercicio
     rutina.exercises[exerciseIndex] = {
         ...rutina.exercises[exerciseIndex].toObject(),
         ...req.body
@@ -152,6 +164,8 @@ const updateEjercicio = asyncHandler(async (req, res) => {
 })
 
 
+// DELETE /api/rutinas/:id/exercises/:exerciseIndex
+// En Postman: elimina un ejercicio por índice (sin body)
 const deleteEjercicio = asyncHandler(async (req, res) => {
     const rutina = await Rutina.findById(req.params.id)
 
@@ -160,7 +174,6 @@ const deleteEjercicio = asyncHandler(async (req, res) => {
         throw new Error('Rutina no encontrada')
     }
 
-    // Verificar que la rutina pertenece al usuario logueado
     if (rutina.user_id.toString() !== req.user.id) {
         res.status(401)
         throw new Error('Usuario no autorizado')
@@ -180,16 +193,17 @@ const deleteEjercicio = asyncHandler(async (req, res) => {
 })
 
 
+// GET /api/ejercicios/historial/:exerciseName
+// En Postman: muestra todas las veces que has usado ese ejercicio.
+// Sin body.
 const getHistorialEjercicio = asyncHandler(async (req, res) => {
     const exerciseName = req.params.exerciseName
 
-    // Buscar todas las rutinas del usuario que contengan este ejercicio
     const rutinas = await Rutina.find({
         user_id: req.user.id,
         'exercises.exercise_name': exerciseName
     }).sort({ date: -1 })
 
-    // Extraer solo el ejercicio específico de cada rutina
     const historial = rutinas.map(rutina => {
         const ejercicio = rutina.exercises.find(
             ex => ex.exercise_name === exerciseName
@@ -206,6 +220,9 @@ const getHistorialEjercicio = asyncHandler(async (req, res) => {
 })
 
 
+// GET /api/ejercicios/nombres
+// En Postman: devuelve lista de nombres de ejercicios únicos.
+// Sin body.
 const getNombresEjercicios = asyncHandler(async (req, res) => {
     const rutinas = await Rutina.find({ user_id: req.user.id })
 
@@ -219,6 +236,7 @@ const getNombresEjercicios = asyncHandler(async (req, res) => {
     res.status(200).json(Array.from(nombresUnicos).sort())
 })
 
+
 module.exports = {
     getRutinas,
     getRutinaById,
@@ -231,4 +249,3 @@ module.exports = {
     getHistorialEjercicio,
     getNombresEjercicios
 }
-

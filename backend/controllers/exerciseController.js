@@ -2,6 +2,9 @@ const asyncHandler = require('express-async-handler')
 const Exercise = require('../models/exerciseModel')
 
 
+// GET /api/exercises
+// En Postman: obtiene todos los ejercicios (predeterminados + personalizados del usuario).
+// No lleva body, solo el token.
 const getExercises = asyncHandler(async (req, res) => {
   const userId = req.user.id
 
@@ -13,6 +16,11 @@ const getExercises = asyncHandler(async (req, res) => {
 })
 
 
+// POST /api/exercises
+// En Postman: crea un ejercicio personalizado.
+// Body mínimo:
+// { "name": "Press banca" }
+// Opcional: muscleGroup, equipment, notes
 const createExercise = asyncHandler(async (req, res) => {
   const { name, muscleGroup, equipment, notes } = req.body
 
@@ -33,9 +41,11 @@ const createExercise = asyncHandler(async (req, res) => {
   res.status(201).json(exercise)
 })
 
-// @desc    Actualizar ejercicio personalizado
-// @route   PUT /api/exercises/:id
-// @access  Private
+
+// PUT /api/exercises/:id
+// En Postman: actualiza un ejercicio personalizado.
+// No puedes modificar ejercicios predeterminados (user_id = null).
+// Body: solo los campos que quieras cambiar.
 const updateExercise = asyncHandler(async (req, res) => {
   const exercise = await Exercise.findById(req.params.id)
 
@@ -64,9 +74,11 @@ const updateExercise = asyncHandler(async (req, res) => {
   res.status(200).json(updated)
 })
 
-// @desc    Eliminar ejercicio personalizado
-// @route   DELETE /api/exercises/:id
-// @access  Private
+
+// DELETE /api/exercises/:id
+// En Postman: elimina un ejercicio personalizado.
+// No se pueden eliminar ejercicios predeterminados.
+// Sin body, solo el token.
 const deleteExercise = asyncHandler(async (req, res) => {
   const exercise = await Exercise.findById(req.params.id)
 
