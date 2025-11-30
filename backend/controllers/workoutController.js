@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const Workout = require('../../models/workoutModel')
+const Workout = require('../models/workoutModel')
 
 // Obtener todas las rutinas del usuario logueado
 const getWorkouts = asyncHandler(async (req, res) => {

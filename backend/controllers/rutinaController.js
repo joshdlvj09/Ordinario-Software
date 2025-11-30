@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const Rutina = require('../../models/rutinaModel')
+const Rutina = require('../models/rutinaModel')
 
 
 const getRutinas = asyncHandler(async (req, res) => {
