@@ -1,9 +1,6 @@
 const asyncHandler = require('express-async-handler')
 const Set = require('../models/setModel')
 
-// @desc    Registrar un set
-// @route   POST /api/sets
-// @access  Private
 const createSet = asyncHandler(async (req, res) => {
   const { exercise_id, rutina_id, date, reps, weight, rpe } = req.body
 
@@ -25,9 +22,7 @@ const createSet = asyncHandler(async (req, res) => {
   res.status(201).json(set)
 })
 
-// @desc    Historial de un ejercicio
-// @route   GET /api/sets/exercise/:exerciseId
-// @access  Private
+
 const getExerciseHistory = asyncHandler(async (req, res) => {
   const exerciseId = req.params.exerciseId
 
@@ -39,9 +34,7 @@ const getExerciseHistory = asyncHandler(async (req, res) => {
   res.status(200).json(sets)
 })
 
-// @desc    PR (peso máximo) de un ejercicio
-// @route   GET /api/sets/exercise/:exerciseId/pr
-// @access  Private
+
 const getExercisePR = asyncHandler(async (req, res) => {
   const exerciseId = req.params.exerciseId
 

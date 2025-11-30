@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
-  "author": "Enrique",
+  "author": "Joshua",
   "type": "commonjs",
-  "main": "app.js",
+  "main": "backend/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "server": "nodemon server.js"
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
