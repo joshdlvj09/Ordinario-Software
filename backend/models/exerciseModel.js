@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const exerciseSchema = mongoose.Schema(
   {
-    // null / undefined => ejercicio global predeterminado
+
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       required: false,

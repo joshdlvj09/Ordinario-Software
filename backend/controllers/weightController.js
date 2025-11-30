@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const WeightEntry = require('../models/weightModel')
+const WeightEntry = require('../../models/weightModel')
 
 
 const addWeightEntry = asyncHandler(async (req, res) => {
