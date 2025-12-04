@@ -20,7 +20,6 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/users', require('./routes/usersRoutes'));
 app.use('/api/rutinas', require('./routes/rutinaRoutes'));
-app.use('/api/workout', require('./routes/workoutRoutes'));
 app.use('/api/exercises', require('./routes/exerciseRoutes'));
 app.use('/api/sets', require('./routes/setRoutes'));
 app.use('/api/weight', require('./routes/weightRoutes'));
