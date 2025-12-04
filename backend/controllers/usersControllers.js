@@ -73,7 +73,7 @@ const register = asyncHandler( async(req, res) => {
 })
 
 
-// GET /api/users/me
+// GET /api/users/data
 // En Postman: obtener datos del usuario actual.
 // Requiere token en headers: Authorization: Bearer TOKEN
 // Sin body.

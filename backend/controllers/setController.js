@@ -3,8 +3,7 @@ const Set = require('../models/setModel')
 
 
 // POST /api/sets
-// En Postman: crea un set (serie) de un ejercicio.
-
+// Crea un set
 const createSet = asyncHandler(async (req, res) => {
   const { exercise_id, rutina_id, date, reps, weight, rpe } = req.body
 
@@ -20,52 +19,59 @@ const createSet = asyncHandler(async (req, res) => {
     date,
     reps,
     weight,
-    rpe,
+    rpe
   })
 
   res.status(201).json(set)
 })
 
 
-// GET /api/sets/history/:exerciseId
-// En Postman: historial completo de sets de un ejercicio.
-// Sin body. Solo token.
-// Ordenado del más reciente al más antiguo.
-const getExerciseHistory = asyncHandler(async (req, res) => {
-  const exerciseId = req.params.exerciseId
+// PUT /api/sets/:id
+// Modifica un set
+const updateSet = asyncHandler(async (req, res) => {
+  const set = await Set.findById(req.params.id)
 
-  const sets = await Set.find({
-    user_id: req.user.id,
-    exercise_id: exerciseId,
-  }).sort({ date: -1 })
-
-  res.status(200).json(sets)
-})
-
-
-// GET /api/sets/pr/:exerciseId
-// En Postman: obtiene tu PR (set con mayor peso; si empata, el de más reps).
-// Sin body. Solo token.
-const getExercisePR = asyncHandler(async (req, res) => {
-  const exerciseId = req.params.exerciseId
-
-  const bestSet = await Set.findOne({
-    user_id: req.user.id,
-    exercise_id: exerciseId,
-  })
-    .sort({ weight: -1, reps: -1 })
-    .exec()
-
-  if (!bestSet) {
+  if (!set) {
     res.status(404)
-    throw new Error('No hay sets registrados para este ejercicio')
+    throw new Error('Set no encontrado')
   }
 
-  res.status(200).json(bestSet)
+  if (set.user_id.toString() !== req.user.id) {
+    res.status(401)
+    throw new Error('Usuario no autorizado')
+  }
+
+  const updated = await Set.findByIdAndUpdate(req.params.id, req.body, {
+    new: true
+  })
+
+  res.status(200).json(updated)
 })
+
+
+// DELETE /api/sets/:id
+// Elimina un set
+const deleteSet = asyncHandler(async (req, res) => {
+  const set = await Set.findById(req.params.id)
+
+  if (!set) {
+    res.status(404)
+    throw new Error('Set no encontrado')
+  }
+
+  if (set.user_id.toString() !== req.user.id) {
+    res.status(401)
+    throw new Error('Usuario no autorizado')
+  }
+
+  await set.deleteOne()
+
+  res.status(200).json({ id: req.params.id })
+})
+
 
 module.exports = {
   createSet,
-  getExerciseHistory,
-  getExercisePR,
+  updateSet,
+  deleteSet
 }
